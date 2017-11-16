@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<project default="build_push">
+	<import file="maven-build.xml" />
+	<property name="src.main.java.dir" value="src/main/java" />
+	<property name="src.main.resources.dir" value="src/main/resources" />
+	<property name="src.test.java.dir" value="src/test/java" />
+	<property name="src.test.resources.dir" value="src/test/resources" />
+	<!-- 配置文件源路径 -->
+	<property name="src.test.resources_tongfu.dir" value="${src.test.resources.dir}" />
+	<!-- 一些配置文件源路径 -->
+	<property name="src_conf.dir" value="conf" />
+	<!-- 启动脚本源路径 -->
+	<property name="src_scripts.dir" value="./scripts" />
+	<!-- 目标根路径 -->
+	<property name="build.dir" value="./build/spring-boot-demo" />
+	<!-- 程序目标根路径 -->
+	<property name="build_app.dir" value="${build.dir}/" />
+	<!-- 编译目标路径 -->
+	<property name="build_compile.dir" value="${build_app.dir}/classes" />
+	<!-- 一些配置文件目标路径 -->
+	<property name="build_conf.dir" value="${build_app.dir}/conf" />
+	<!-- jar包目标路径 -->
+	<property name="build_lib.dir" value="${build_app.dir}/lib" />
+	<!-- 用于混淆的临时路径 -->
+	<property name="build_lib_obfuscate.dir" value="${build_app.dir}/lib_obfuscate" />
+	
+	<!-- 初始化任务 -->
+	<target name="init" description="init">
+		<!-- 删除 -->
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build_app.dir}" />
+		<mkdir dir="${build_compile.dir}" />
+		<mkdir dir="${build_lib.dir}" />
+	</target>
+	<!-- 编译 -->
+	<target name="compile" depends="init">
+		<javac destdir="${build_compile.dir}" source="1.7" target="1.7" debug="false" deprecation="false" optimize="true" encoding="UTF-8" failonerror="true">
+			<src path="${src.main.java.dir}:${src.test.java.dir}" />
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+	<!-- 将类打包成jar到目标路径 -->
+	<target name="classes_jar" depends="compile">
+		<jar jarfile="${build_lib.dir}/${maven.build.finalName}-test.jar" compress="true" index="false" basedir="${build_compile.dir}" excludes="**/package.html" />
+	</target>
+	<!-- 拷贝类库到目标路径 -->
+	<target name="lib_copy" depends="init">
+		<copy todir="${build_lib.dir}" flatten="true">
+			<path refid="build.classpath" />
+			<path refid="build.test.classpath" />
+		</copy>
+	</target>
+	<!-- 拷贝配置文件到目标路径 -->
+	<target name="resources_copy" depends="init" description="copy the config files">
+		<!-- 拷贝resources到目标路径 -->
+		<copy todir="${build_conf.dir}" includeEmptyDirs="no">
+			<fileset dir="${src.test.resources.dir}">
+				<patternset>
+					<include name="*.properties" />
+					<include name="*.xml" />
+					<include name="*.dtd" />
+				</patternset>
+			</fileset>
+		</copy>
+		<!-- 拷贝conf到目标路径 -->
+		<copy todir="${build_conf.dir}">
+			<fileset dir="${src_conf.dir}"/>
+		</copy>
+	</target>
+	<!-- 拷贝配置文件到目标路径 -->
+	<target name="resources_tongfu_copy" depends="init" description="copy the  config files">
+		<copy todir="${build_conf.dir}" includeEmptyDirs="no" overwrite="true">
+			<fileset dir="${src.test.resources_tongfu.dir}">
+				<patternset>
+					<include name="*.properties" />
+					<include name="*.xml" />
+					<include name="*.dtd" />
+				</patternset>
+			</fileset>
+		</copy>
+	</target>
+	<!-- 拷贝启动脚本到目标路径 -->
+	<target name="runscripts_copy" depends="init" description="copy the run script files">
+		<copy todir="${build_app.dir}">
+			<fileset dir="${src_scripts.dir}"/>
+		</copy>
+	</target>
+	<!-- 执行最后的清理工作 -->
+	<target name="last_sweep" depends="init" description="sweep at last">
+		<delete dir="${build_compile.dir}"/>
+	</target>
+	
+	<!-- 执行标准平台build操作 -->
+	<target name="build_push" depends="init,compile,classes_jar,lib_copy,resources_copy,resources_tongfu_copy,runscripts_copy,last_sweep" />
+	
+</project>

@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.demo.test;
 
 import org.springframework.stereotype.Component;
 
@@ -17,5 +17,8 @@ public class CarFactory {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public int add(int i,int j) {
+		return i+j;
 	}
 }
