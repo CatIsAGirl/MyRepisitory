@@ -1,6 +1,8 @@
 package com.example.demo.test;
 
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Component;
 
 import com.example.demo.MyAutowired;
@@ -33,5 +35,15 @@ public class CarFactory2 {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public static void main(String[] args) {
+		System.out.println("press ENTER to call System.exit() and run the shutdown routine.");  
+        try {  
+            System.in.read();  
+            System.out.println("shutdown");
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }  
+        System.exit(0);  
 	}
 }
